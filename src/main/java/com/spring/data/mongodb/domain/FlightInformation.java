@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.index.TextIndexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -19,14 +19,22 @@ public class FlightInformation {
 	@TextIndexed
 	private String departureCity;
 	
+	@DBRef
+	private Airport departureAirport;
+	
 	@Field("destination")
 	@TextIndexed(weight = 2)
 	private String destinationCity;
+	
+	@DBRef
+	private Airport destinationAirport;
 	
 	private FlightType type;
 	private boolean isDelayed;
 	private int durationMin;
 	private LocalDate departureDate;
+	
+	@DBRef
 	private Aircraft aircraft;
 	
 	@Transient
@@ -89,6 +97,24 @@ public class FlightInformation {
 	}
 	public void setCreatedAt(LocalDate createdAt) {
 		this.createdAt = createdAt;
-	}		
+	}
+
+	public Airport getDepartureAirport() {
+		return departureAirport;
+	}
+
+	public void setDepartureAirport(Airport departureAirport) {
+		this.departureAirport = departureAirport;
+	}
+
+	public Airport getDestinationAirport() {
+		return destinationAirport;
+	}
+
+	public void setDestinationAirport(Airport destinationAirport) {
+		this.destinationAirport = destinationAirport;
+	}
+	
+	
 		
 }

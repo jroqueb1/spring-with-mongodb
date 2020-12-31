@@ -1,22 +1,41 @@
 package com.spring.data.mongodb;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.spring.data.mongodb.converters.AircraftDbReadConverter;
-import com.spring.data.mongodb.converters.AircraftDbWriteConverter;
+import com.github.mongobee.Mongobee;
 
 @SpringBootApplication
 public class AirportManagementApplication {
 
+	private final Environment environment;
+	private final MongoTemplate mongoTemplate;
+	
+	public AirportManagementApplication(Environment environment, MongoTemplate mongoTemplate) {
+		this.environment = environment;
+		this.mongoTemplate = mongoTemplate;
+	}
+	
 	public static void main(String[] args) {
 		SpringApplication.run(AirportManagementApplication.class, args);
+	}
+	
+	@Bean
+	public Mongobee mongoBee() {
+		String mongoUri = environment.getProperty("spring.data.mongodb.uri");
+		boolean migrationEnabled = Boolean.parseBoolean(environment.getProperty("app.db.migrations.enabled"));
+		
+		Mongobee runner = new Mongobee(mongoUri);
+		runner.setEnabled(migrationEnabled);
+		runner.setChangeLogsScanPackage("com.spring.data.mongodb.db.migrations");
+		runner.setChangelogCollectionName("migrations");
+		runner.setLockCollectionName("migrations_lock");
+		runner.setMongoTemplate(mongoTemplate);
+		
+		return runner;
 	}
 
 //	@Bean
